@@ -14,11 +14,6 @@ soundness, instead of the paper's induction on the length of the derivation foll
 trace grammar, we show that every transition reflects a big-step "completion" invariant
 backwards (`SmallStep.completes_back`); the trace grammar itself is treated separately in
 `SmallStepTraces.lean`.
-
-Minor typos in the paper's proofs, which do not affect the results: in case `IfTrue` of the
-completeness proof the last configuration should be `⟨σ', skip, S⟩` (not `⟨σ', s₂, S⟩`); in
-case `LoopRec` the premise of `Loop2` is `⟨σ', e₁⟩ ⇓ v₁`; in case `CallS bal` of the
-soundness proof the induction hypothesis gives `⟨σ, Γ(id)⟩ ⇓ σ'`.
 -/
 
 @[expose] public section
@@ -246,13 +241,13 @@ theorem Balanced.smallSteps {Γ : ProcEnv} {c c' : SSConfig} (h : Balanced Γ c 
 
 /-! ### Equivalence -/
 
-/-- Theorem "equiv": `⟨ε, s⟩ ⇓ σ` iff `⟨ε, s, []⟩ →* ⟨σ, skip, []⟩`. -/
-theorem bigStep_iff_smallSteps {Γ : ProcEnv} {s : Stmt} {σ : Store} :
-    Exec Γ Store.empty s σ ↔ SmallSteps Γ ⟨Store.empty, s, []⟩ ⟨σ, .skip, []⟩ :=
+/-- Theorem "equiv": `⟨σ, s⟩ ⇓ σ'` iff `⟨σ, s, []⟩ →* ⟨σ', skip, []⟩`. -/
+theorem bigStep_iff_smallSteps {Γ : ProcEnv} {s : Stmt} {σ σ' : Store} :
+    Exec Γ σ s σ' ↔ SmallSteps Γ ⟨σ, s, []⟩ ⟨σ', .skip, []⟩ :=
   ⟨fun h => h.toSmallSteps [],
    fun h => (Balanced.toBigStep (balanced_of_nil rfl rfl h)).2⟩
 
-/-- Generalization of Theorem "equiv" to an arbitrary initial store and stack:
+/-- Generalization of Theorem "equiv" to an arbitrary stack:
 `⟨σ, s⟩ ⇓ σ'` iff there is a balanced derivation `⟨σ, s, S⟩ →* ⟨σ', skip, S⟩`. -/
 theorem exec_iff_balanced {Γ : ProcEnv} {s : Stmt} {σ σ' : Store} {S : Stack} :
     Exec Γ σ s σ' ↔ Balanced Γ ⟨σ, s, S⟩ ⟨σ', .skip, S⟩ := by

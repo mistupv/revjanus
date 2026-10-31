@@ -19,8 +19,7 @@ This file formalizes Section "A Small-Step Semantics for Janus" of the paper:
 
 ## Modelling choices
 
-* The paper writes the sequence stack item as `seq(e₂)` in the prose but as `seq(s₂)` in
-  the rules; it carries the statement `s₂` still to be executed.
+* The sequence stack item `seq(s₂)` carries the statement `s₂` still to be executed.
 * As in the big-step semantics, `Γ` is a partial map; rules `CallS` and `UnCallS` only apply
   to declared procedures.
 * A stack `S'` *extends* a stack `S` when `S` is a suffix of `S'` (items are pushed on the

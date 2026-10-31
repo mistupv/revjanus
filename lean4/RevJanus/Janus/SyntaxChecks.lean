@@ -3,8 +3,8 @@ import RevJanus.Janus.Semantics
 /-!
 # Sanity checks for the first fragment (syntax, expressions, big-step semantics, inverter)
 
-Audit file (not part of any build target and not imported by any other file).
-Compile with:
+Audit file, not imported by any other file. It is built by `lake build` (the library
+includes every file under `RevJanus/`); to check it on its own:
 
     lake env lean RevJanus/Janus/SyntaxChecks.lean
 

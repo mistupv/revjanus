@@ -1,6 +1,6 @@
 module
 
-public import RequestProject.Janus.SmallStep
+public import RevJanus.Janus.SmallStep
 
 /-!
 # Janus: equivalence of the big-step and small-step semantics

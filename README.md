@@ -7,7 +7,7 @@ This is an executable prototype of "A Reversible Semantics for Janus" (JLAMP ver
 - the reversible semantics: forward rules (Section 4.1) and backward rules (Section 4.2);
 - an interactive explorer that moves forward and backward through a computation, one step at a time.
 
-It mirrors the Lean 4 specification in `lean4/RequestProject/Janus/`. It is written in pure Prolog for SWI-Prolog (tested with 9.0.4): no `assert`/`retract`, and every rule of the paper is one Horn clause, with its premises in the paper's order, under a comment `% Rule <Name>`.
+It mirrors the Lean 4 specification in `lean4/RevJanus/Janus/`. It is written in pure Prolog for SWI-Prolog (tested with 9.0.4): no `assert`/`retract`, and every rule of the paper is one Horn clause, with its premises in the paper's order, under a comment `% Rule <Name>`.
 
 ## Files
 

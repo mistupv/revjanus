@@ -1,13 +1,13 @@
 module
 
-public import RequestProject.Janus.ForwardProgram
-public import RequestProject.Janus.CFGExample
+public import RevJanus.Janus.ForwardProgram
+public import RevJanus.Janus.CFGExample
 
 /-!
 # Janus: the forward derivation of Example "forward_trace"
 
 We check the forward derivation of Figure "Forward derivation with the reversible semantics"
-for the program Sum3 (Figure "Sum3", formalized in `RequestProject.Janus.CFGExample`):
+for the program Sum3 (Figure "Sum3", formalized in `RevJanus.Janus.CFGExample`):
 each of the 22 transitions of the figure is a transition of the forward rules
 (`step01`, …, `step22`), so that
 `⟨ε, 1, 2, []⟩ ⇀* ⟨{n ↦ 6, i ↦ 3, total ↦ 3}, 3, 4, []⟩` (`forward_trace`), where `4` is the

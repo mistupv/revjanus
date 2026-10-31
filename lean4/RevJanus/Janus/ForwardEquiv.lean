@@ -1,7 +1,7 @@
 module
 
-public import RequestProject.Janus.ForwardCFG
-public import RequestProject.Janus.SmallStep
+public import RevJanus.Janus.ForwardCFG
+public import RevJanus.Janus.SmallStep
 
 /-!
 # Janus: equivalence between the small-step semantics and the forward rules
@@ -28,10 +28,10 @@ the reversible semantics (`Corr`). `Corr` is the paper's relation `∼conf` (as 
 stack relation `StackCorr P S S' K E D` is the paper's `π ∼stack^{ℓₙ,ℓₑ} π'` of Figure
 "eqstack" (with `K = ℓₙ` and `E = ℓₑ`), and the control relation `CtlCorr` gives the
 paper's conditions (a) and (b), where the continuation `next(t) = K` is `OccK P t K`
-(`RequestProject.Janus.ForwardCFG`). The only difference is that `StackCorr` and `CtlCorr`
+(`RevJanus.Janus.ForwardCFG`). The only difference is that `StackCorr` and `CtlCorr`
 also record a list `D` of labels (the labels of the statement whose execution is in
 progress at the current level of the stack), which is used to prove the simulation steps.
-This list is redundant: in `RequestProject.Janus.ForwardPaper`, the paper's relations are
+This list is redundant: in `RevJanus.Janus.ForwardPaper`, the paper's relations are
 formalized literally (`StackEquiv`, `ConfEquiv`), and it is proved that
 `StackCorr P S S' K E D → StackEquiv P S S' K E`, `StackEquiv P S S' K E → ∃ D,
 StackCorr P S S' K E D` and `Corr P c k ↔ ConfEquiv P c k`; the steps of the proof are then

@@ -1,6 +1,6 @@
 module
 
-public import RequestProject.Janus.Syntax
+public import RevJanus.Janus.Syntax
 
 /-!
 # Janus: the inverter function `𝓘`

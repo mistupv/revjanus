@@ -1,7 +1,7 @@
 module
 
-public import RequestProject.Janus.LoopLemma
-public import RequestProject.Janus.ForwardExample
+public import RevJanus.Janus.LoopLemma
+public import RevJanus.Janus.ForwardExample
 
 /-!
 # Janus: the backward derivation of Example "backward_trace"

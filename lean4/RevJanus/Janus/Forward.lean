@@ -1,7 +1,7 @@
 module
 
-public import RequestProject.Janus.CFG
-public import RequestProject.Janus.Semantics
+public import RevJanus.Janus.CFG
+public import RevJanus.Janus.Semantics
 
 /-!
 # Janus: the forward rules of the reversible semantics (Section "The Forward Rules")
@@ -24,7 +24,7 @@ This file formalizes the definitions of Subsection "The Forward Rules":
 
 The auxiliary notions used in the proof of Lemma "forward-rev" (the continuation `next(t)`,
 Lemma "cfg-next", the relation `π ∼stack^{ℓₙ,ℓₑ} π'` and the relation `∼conf`) are formalized
-in `RequestProject.Janus.ForwardPaper`.
+in `RevJanus.Janus.ForwardPaper`.
 
 ## Modelling choices
 

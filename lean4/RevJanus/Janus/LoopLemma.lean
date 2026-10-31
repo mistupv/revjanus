@@ -1,7 +1,7 @@
 module
 
-public import RequestProject.Janus.BackwardInv
-public import RequestProject.Janus.ForwardProgram
+public import RevJanus.Janus.BackwardInv
+public import RevJanus.Janus.ForwardProgram
 
 /-!
 # Janus: the loop lemma (Section "The Backward Rules")
@@ -17,7 +17,7 @@ well-formed program `p` (`Program.loop_lemma`). As in the paper, the well-formed
 cases `AssVar` and `AssArr`.
 
 As in the paper, the proof is a case distinction on the applied rule. Reachability is used
-through the invariant `RInv` of `RequestProject.Janus.BackwardInv`: it provides the facts
+through the invariant `RInv` of `RevJanus.Janus.BackwardInv`: it provides the facts
 that the paper's proof takes for granted, e.g. that the two labels of a configuration are
 the two ends of an edge of the CFG, that the label preceding the assertion `ℓ₂` of a
 conditional whose then-branch `s₁` is running is `exit(s₁)`, or that the stack item

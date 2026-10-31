@@ -1,6 +1,6 @@
 module
 
-public import RequestProject.Janus.CFG
+public import RevJanus.Janus.CFG
 
 /-!
 # Janus: the running example Sum3 (Figures "Sum3" and "CFGs for program Sum3")

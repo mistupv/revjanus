@@ -1,12 +1,12 @@
 module
 
-public import RequestProject.Janus.Backward
-public import RequestProject.Janus.ForwardPaper
+public import RevJanus.Janus.Backward
+public import RevJanus.Janus.ForwardPaper
 
 /-!
 # Janus: an invariant of the reachable configurations of the reversible semantics
 
-Auxiliary material for the proof of the loop lemma (`RequestProject.Janus.LoopLemma`).
+Auxiliary material for the proof of the loop lemma (`RevJanus.Janus.LoopLemma`).
 
 * `RevWF P`: the well-formedness conditions on labeled programs assumed by the loop lemma
   (unique labels; every body is `start m stop` where `m` is a labeled version of a

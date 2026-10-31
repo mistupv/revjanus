@@ -1,6 +1,6 @@
 module
 
-public import RequestProject.Janus.SmallStep
+public import RevJanus.Janus.SmallStep
 
 /-!
 # Janus: determinism of the small-step semantics (sanity check)

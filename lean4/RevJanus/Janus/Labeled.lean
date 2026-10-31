@@ -1,6 +1,6 @@
 module
 
-public import RequestProject.Janus.Inverter
+public import RevJanus.Janus.Inverter
 
 /-!
 # Janus: labeled syntax (Section "A Reversible Semantics for Janus")

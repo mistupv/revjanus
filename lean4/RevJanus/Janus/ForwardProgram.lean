@@ -1,7 +1,7 @@
 module
 
-public import RequestProject.Janus.ForwardEquiv
-public import RequestProject.Janus.SmallStepEquiv
+public import RevJanus.Janus.ForwardEquiv
+public import RevJanus.Janus.SmallStepEquiv
 
 /-!
 # Janus: Lemma "forward-rev" for the labeled version of a program

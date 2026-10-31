@@ -1,6 +1,6 @@
 module
 
-public import RequestProject.Janus.SmallStepEquiv
+public import RevJanus.Janus.SmallStepEquiv
 
 /-!
 # Janus: traces of small-step derivations

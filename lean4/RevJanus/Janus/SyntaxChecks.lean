@@ -1,4 +1,4 @@
-import RequestProject.Janus.Semantics
+import RevJanus.Janus.Semantics
 
 /-!
 # Sanity checks for the first fragment (syntax, expressions, big-step semantics, inverter)
@@ -6,7 +6,7 @@ import RequestProject.Janus.Semantics
 Audit file (not part of any build target and not imported by any other file).
 Compile with:
 
-    lake env lean RequestProject/Janus/SyntaxChecks.lean
+    lake env lean RevJanus/Janus/SyntaxChecks.lean
 
 It only uses the project's own definitions. The auxiliary interpreter `run` below is
 defined here (not in the project) and proved *sound* with respect to `BigStep`, so that

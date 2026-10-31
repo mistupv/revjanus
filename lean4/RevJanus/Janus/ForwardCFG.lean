@@ -1,11 +1,11 @@
 module
 
-public import RequestProject.Janus.Forward
+public import RevJanus.Janus.Forward
 
 /-!
 # Janus: structural properties of labeled programs used for the forward rules
 
-Auxiliary material for the proof of Lemma "forward-rev" (`RequestProject.Janus.ForwardEquiv`):
+Auxiliary material for the proof of Lemma "forward-rev" (`RevJanus.Janus.ForwardEquiv`):
 
 * `LRepr t s`: the labeled statement `t` is the statement `s` of the original syntax with
   labels added (and no `start`/`stop`);

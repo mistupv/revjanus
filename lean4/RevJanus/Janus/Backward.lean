@@ -1,7 +1,7 @@
 module
 
-public import RequestProject.Janus.Forward
-public import RequestProject.Janus.ForwardCFG
+public import RevJanus.Janus.Forward
+public import RevJanus.Janus.ForwardCFG
 
 /-!
 # Janus: the backward rules of the reversible semantics (Section "The Backward Rules")
@@ -25,7 +25,7 @@ The configuration `⟨σ, ℓ₁, ℓ₂, S⟩ ↽ ⟨σ', ℓ₁', ℓ₂', S'�
 `k' = ⟨σ', ℓ₁', ℓ₂', S'⟩` (the configuration after it): as in the paper, the reduction
 proceeds from left to right.
 
-The modelling choices are those of the forward rules (`RequestProject.Janus.Forward`):
+The modelling choices are those of the forward rules (`RevJanus.Janus.Forward`):
 `block(ℓ) = o` is `P.block ℓ = some o`, `ctx(ℓ) = t` is `P.ctx ℓ = some t`, and `Γ(id)`,
 `Γ(id⁻¹)` are `P.proc (.fwd id)`, `P.proc (.inv id)`.
 -/

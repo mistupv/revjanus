@@ -1,6 +1,6 @@
 module
 
-public import RequestProject.Janus.Semantics
+public import RevJanus.Janus.Semantics
 
 /-!
 # Janus: sanity-check examples for the big-step semantics

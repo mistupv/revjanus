@@ -1,6 +1,6 @@
 module
 
-public import RequestProject.Janus.ForwardEquiv
+public import RevJanus.Janus.ForwardEquiv
 
 /-!
 # Janus: the proof devices of Lemma "forward-rev", as stated in the paper
@@ -9,7 +9,7 @@ This file formalizes the notions introduced in the (revised) proof of Lemma "for
 of Subsection "The Forward Rules", and restates the steps of that proof with them:
 
 * Definition "continuation" (`next(t)`): the relation `OccK P t K` ("`t` occurs in a body
-  `[start]^a s [stop]^z` of `P`, and `next(t) = K`") of `RequestProject.Janus.ForwardCFG`,
+  `[start]^a s [stop]^z` of `P`, and `next(t) = K`") of `RevJanus.Janus.ForwardCFG`,
   which has exactly the clauses of the definition; when labels are unique, it is functional
   (`OccK.next_unique`), so that `next` is well defined;
 * Lemma "cfg-next": `cfg_next_1` … `cfg_next_5`;
@@ -17,12 +17,12 @@ of Subsection "The Forward Rules", and restates the steps of that proof with the
 * the relation `∼conf`, with conditions (a) and (b): `ConfEquiv`.
 
 We then show that these notions match the simulation relation `StackCorr`/`Corr` used in
-`RequestProject.Janus.ForwardEquiv` (`StackCorr.toStackEquiv`, `StackEquiv.toStackCorr`,
+`RevJanus.Janus.ForwardEquiv` (`StackCorr.toStackEquiv`, `StackEquiv.toStackCorr`,
 `corr_iff_confEquiv`), and derive the claims of the proof in terms of `∼conf`
 (`ConfEquiv.init`, `ConfEquiv.fwd_sim`, `ConfEquiv.back_sim`, `ConfEquiv.final_fwd`,
 `ConfEquiv.final_back`), and finally the lemma itself (`ConfEquiv.smallSteps_iff_fwdSteps`).
 
-As in `RequestProject.Janus.ForwardEquiv`, the small-step configurations are the real
+As in `RevJanus.Janus.ForwardEquiv`, the small-step configurations are the real
 (unlabeled) small-step configurations, and the statements they contain are related to the
 labeled statements of `P` by `LRepr` (the paper says that the small-step rules "simply ignore
 the annotations"): "`s` is a statement occurring in `p`" in condition (a) of `∼conf` means

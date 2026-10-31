@@ -1,6 +1,6 @@
 module
 
-public import RequestProject.Janus.Labeled
+public import RevJanus.Janus.Labeled
 
 /-!
 # Janus: entry and exit points, contexts and control-flow graphs

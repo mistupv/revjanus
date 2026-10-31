@@ -1,6 +1,6 @@
 module
 
-public import RequestProject.Janus.Semantics
+public import RevJanus.Janus.Semantics
 
 /-!
 # Janus: small-step semantics

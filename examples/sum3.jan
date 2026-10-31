@@ -1,0 +1,10 @@
+n += 3
+call sumMul3
+procedure sumMul3
+  i += 1
+  from i = 1 do
+    if (i % 3) = 0 then total += i else skip fi (i % 3) = 0
+  loop
+    i += 1
+  until i >= n
+  n += total

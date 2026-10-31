@@ -1,0 +1,13 @@
+// The loop of the Lean tests: from i = 0 do skip loop i += 1 until i = 3
+from i = 0 do
+  skip
+loop
+  i += 1
+until i = 3
+// A second loop: sum of 1..5 into s
+from k = 0 do
+  k += 1
+  s += k
+loop
+  skip
+until k = 5

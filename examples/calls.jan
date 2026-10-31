@@ -1,0 +1,10 @@
+// call and uncall
+x += 3
+call inc
+call inc
+uncall inc
+call double
+procedure inc
+  x += 1
+procedure double
+  y += x * 2

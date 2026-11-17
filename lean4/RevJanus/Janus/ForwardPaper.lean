@@ -13,7 +13,8 @@ of Subsection "The Forward Rules", and restates the steps of that proof with the
   which has exactly the clauses of the definition; when labels are unique, it is functional
   (`OccK.next_unique`), so that `next` is well defined;
 * Lemma "cfg-next": `cfg_next_1` … `cfg_next_5`;
-* Figure "eqstack", the relation `π ∼stack^{ℓₙ,ℓₑ} π'`: `StackEquiv`;
+* Figure "eqstack", the relation `π ∼stack^{ℓₑ,ℓₙ} π'`: `StackEquiv` (with the two label
+  parameters in the reverse order, `StackEquiv P π π' ℓₙ ℓₑ`; see its docstring);
 * the relation `∼conf`, with conditions (a) and (b): `ConfEquiv`.
 
 We then show that these notions match the simulation relation `StackCorr`/`Corr` used in
@@ -103,7 +104,10 @@ and a stack `π'` of the reversible semantics (`StackEquiv P π π' ℓₙ ℓ�
 statement currently being executed has been completed, `ℓₙ` is the label of the next block
 to be executed and `ℓₑ` the label of the last executed block. The premise "`next(t) = K`"
 is `OccK P t K` (which includes the fact that `t` occurs in `P`), and the small-step
-stack items contain the unlabeled versions (`LRepr`) of the labeled statements. -/
+stack items contain the unlabeled versions (`LRepr`) of the labeled statements.
+Note: the paper writes the relation as `π ∼stack^{ℓₑ,ℓₙ} π'` (last, then next, as in the
+configurations `⟨σ, ℓ₁, ℓ₂, π⟩`), whereas `StackEquiv` and the comments in this file keep the
+order `ℓₙ, ℓₑ`. -/
 inductive StackEquiv (P : LProgram Label) : Stack → RStack → Label → Label → Prop
   /-- Rule `Nil`: `[start]^a s [stop]^z` is the main program; `[] ∼stack^{z,exit(s)} []`. -/
   | nil {a z : Label} {s : LStmt Label} :

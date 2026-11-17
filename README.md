@@ -1,6 +1,75 @@
-# Janus in Prolog
+# RevJanus: a reversible small-step semantics for Janus
 
-This is an executable prototype of "A Reversible Semantics for Janus" (JLAMP version). It covers:
+This repository accompanies the paper "A Reversible Small-Step Semantics for Janus Based on a
+Program Counter" by Ivan Lanese and Germán Vidal.
+It contains two independent artifacts:
+
+- **A Lean 4 formalization** (`lean4/`) of the definitions and results of the paper: the syntax
+  and big-step semantics of Janus, the inverter, the small-step semantics and its equivalence
+  with the big-step semantics, labeled programs and control-flow graphs, the forward and
+  backward rules of the reversible semantics, Lemma "forward-rev" and the loop lemma, and the
+  running example Sum3. The development contains no `sorry` and no `axiom`.
+- **A Prolog implementation** (`src/`, `tests/`, `examples/`) of the same semantics: an
+  interpreter for the big-step, small-step and reversible semantics, which prints the labeled
+  program and its CFGs, traces computations step by step, and includes an interactive explorer
+  that moves forward and backward through a computation (Section 5 of the paper).
+
+## Repository layout
+
+| Path | Contents |
+|---|---|
+| `lean4/` | Lake project with the Lean 4 formalization (`lean4/RevJanus/`) |
+| `src/` | Prolog implementation (SWI-Prolog) |
+| `tests/` | plunit tests of the Prolog implementation |
+| `examples/` | Janus programs used by the tool and the tests (e.g. `sum3.jan`, the running example of the paper) |
+
+## Lean 4 formalization (`lean4/`)
+
+The formalization follows the paper closely: each file starts with a comment that relates its
+definitions and theorems to the corresponding definitions, figures and results of the paper.
+
+| Paper | File (`lean4/RevJanus/Janus/`) | Main declarations |
+|---|---|---|
+| Syntax, well-formed programs (Section 2) | `Syntax.lean` | `Stmt`, `Program`, `Program.WellFormed` |
+| Semantics of expressions and big-step semantics (Section 2) | `Semantics.lean` | `EvalExpr`, `BigStep`, `BigStep.det` |
+| Inverter (Section 2) | `Inverter.lean` | `Stmt.invert`, `Stmt.WellFormed.invert` |
+| Small-step semantics (Section 3) | `SmallStep.lean` | `SmallStep`, `Balanced`, `LoopDerivation` |
+| Equivalence of big-step and small-step semantics (Section 3) | `SmallStepEquiv.lean` | `BigStep.toSmallSteps`, `Balanced.toBigStep`, `LoopDerivation.toBigStep`, `bigStep_iff_smallSteps` |
+| Traces of small-step derivations (Section 3) | `SmallStepTraces.lean` | `balanced_iff_exists_trace`, `loopDerivation_iff_exists_trace` |
+| Determinism of the small-step semantics | `SmallStepDet.lean` | `SmallStep.det` |
+| Labeled syntax, `start`/`stop`, inverse procedures, labeling (Section 4) | `Labeled.lean` | `LStmt`, `Program.toLabeled`, `Program.toLabeled_uniqueLabels` |
+| `entry`, `exit`, `ctx` and control-flow graphs (Section 4) | `CFG.lean` | `LStmt.entry`, `LStmt.exit`, `LStmt.ctx`, `LStmt.flow` |
+| Program Sum3 and its CFGs (Section 4) | `CFGExample.lean` | `cfg_main`, `cfg_sumMul3` |
+| Forward rules (Section 4.1) | `Forward.lean` | `LProgram.flow`, `FwdStep`, `LProgram.IsInitial` |
+| Lemma "forward-rev" and the notions used in its proof (Section 4.1) | `ForwardCFG.lean`, `ForwardEquiv.lean`, `ForwardPaper.lean`, `ForwardProgram.lean` | `StackEquiv`, `ConfEquiv`, `Program.smallSteps_iff_fwdSteps`, `Program.exec_iff_fwdSteps` |
+| Forward derivation of Sum3 (Section 4.1) | `ForwardExample.lean` | `forward_trace` |
+| Inverse CFG and backward rules (Section 4.2) | `Backward.lean` | `LStmt.invFlow_eq_flow_invert`, `BwdStep`, `LProgram.Reachable` |
+| Loop lemma (Section 4.2) | `BackwardInv.lean`, `LoopLemma.lean` | `loop_lemma`, `Program.loop_lemma` |
+| Backward derivation of Sum3 (Section 4.2) | `BackwardExample.lean` | `backward_trace` |
+| Sanity checks (examples, arithmetic, stores) | `Examples.lean`, `SyntaxChecks.lean` | see the table "Tests: comparison with the Lean suite" below |
+
+The files `RevJanus/Janus.lean`, `RevJanus/JanusSmallStep.lean` and
+`RevJanus/JanusReversible.lean` import, respectively, the files for Section 2, Sections 2–3,
+and the whole development.
+
+### Building
+
+The Lean development is a Lake project that depends on Mathlib. All versions are pinned: `lean-toolchain` fixes Lean 4.28.0, and `lake-manifest.json` fixes the exact commit of Mathlib and of each of its dependencies.
+
+1. Install [elan](https://github.com/leanprover/elan), the Lean version manager. It installs the Lean version given in `lean-toolchain` automatically.
+2. Download the prebuilt Mathlib and build the project:
+
+```
+cd lean4
+lake exe cache get
+lake build
+```
+
+`lake exe cache get` downloads the precompiled Mathlib files (about 7 GB on disk, in `lean4/.lake/`); without it, `lake build` compiles Mathlib from source, which takes hours. The development contains no `sorry` and no `axiom`.
+
+## Prolog implementation (`src/`, `tests/`, `examples/`)
+
+This is an executable prototype of the semantics of the paper. It covers:
 - the syntax, the semantics of expressions, the big-step semantics of sequential Janus and the inverter (Section 2);
 - the small-step semantics (Section 3);
 - labeled programs with `start`/`stop`, inverse procedures, `entry`/`exit`, `ctx` and control-flow graphs (Section 4, preliminaries);
@@ -9,7 +78,7 @@ This is an executable prototype of "A Reversible Semantics for Janus" (JLAMP ver
 
 It mirrors the Lean 4 specification in `lean4/RevJanus/Janus/`. It is written in pure Prolog for SWI-Prolog (tested with 9.0.4): no `assert`/`retract`, and every rule of the paper is one Horn clause, with its premises in the paper's order, under a comment `% Rule <Name>`.
 
-## Files
+### Files
 
 | File | Contents |
 |---|---|
@@ -28,7 +97,7 @@ It mirrors the Lean 4 specification in `lean4/RevJanus/Janus/`. It is written in
 | `tests/test_reversible.pl` | plunit tests: small-step semantics, labeled programs and CFGs, reversible semantics, explorer, command line, random programs |
 | `examples/*.jan` | `simple.jan`, `loops.jan`, `calls.jan`, `noprocs.jan`, `sum3.jan` |
 
-## How to run
+### How to run
 
 From the repository root:
 
@@ -76,7 +145,7 @@ Interactively:
 ?- parse_file('examples/sum3.jan', P), run_program(P, S), print_store(S).
 ```
 
-## Trace mode
+### Trace mode
 
 `--trace` prints the big-step derivation of the run, then the final store:
 
@@ -117,13 +186,13 @@ y = 8
   - A test checks that the trace gives the same final store as `run_program/2` on all programs.
 - **Size.** The trace of a long run can be very large: every loop iteration adds a few lines.
 
-## Small-step semantics (`janus_smallstep.pl`)
+### Small-step semantics (`janus_smallstep.pl`)
 
 - Configurations are `conf(Sigma, S, Stack)`, i.e. ⟨σ, s, π⟩. The stack items are `seq(S2)`, `if_true(E2)`, `if_false(E2)`, `loop1(E1,S1,E2,S2)`, `loop2(E1,S1,E2,S2)`; the head of the list is the top.
 - `ss_step(Gamma, C, Rule, C1)` has one clause per rule of the two small-step figures: AssVarS, AssArrS, CallS, UnCallS, Seq1, Seq2, IfTrue1, IfTrue2, IfFalse1, IfFalse2, LoopMainS, LoopBaseS, Loop1, Loop2.
 - A final configuration is ⟨σ, skip, []⟩. `ss_run/4` applies rules until a final configuration is reached (`final(C)`) or no rule applies (`stuck(C)`).
 
-## Labeled programs and CFGs (`janus_labeled.pl`)
+### Labeled programs and CFGs (`janus_labeled.pl`)
 
 - Every body `s` (main program and procedures) becomes `start (s stop)`. The inverse procedure `id⁻¹` has body 𝓘⟦start s stop⟧, where 𝓘⟦start⟧ = stop and 𝓘⟦stop⟧ = start. In the output of `--cfg` and `--explore` it is printed as `procedure rev-id` (not a valid Janus identifier, so it cannot clash with a user procedure, and it cannot be confused with the `[block]^label` notation).
 - Labels are assigned consecutively from 1, in textual order: the main program, then the procedures, then the inverse procedures. This reproduces the labels of the Sum3 figure (main 1–4, `sumMul3` 5–15, `sumMul3⁻¹` 16–26).
@@ -131,14 +200,14 @@ y = 8
 - `entry/2`, `exit/2`, `flow/2` follow the definitions of the paper; `flow(p)` is the union of the CFGs of the main program and of every (inverse) procedure. `ctx(Info, L, S)` gives the conditional or loop where the test or assertion with label `L` occurs.
 - The reversible semantics works on a precomputed term `info(LProg, Blocks, Ctx, Succ, Pred)` (`info_of_program/2`), so that blocks, `ctx` and CFG edges are looked up in AVL trees.
 
-## Reversible semantics (`janus_reversible.pl`)
+### Reversible semantics (`janus_reversible.pl`)
 
 - Configurations are `rc(Sigma, L1, L2, Stack)`, i.e. ⟨σ, ℓ₁, ℓ₂, π⟩: ℓ₁ is the last executed block and ℓ₂ the next one. Stack items: `call(L)`, `uncall(L)`, `if_true(L1,L2)`, `if_false(L1,L2)`, `loop1(L1,S1,L2,S2)`, `loop2(L1,S1,L2,S2)`.
 - `fwd_step(Info, K, Rule, K1)` and `bwd_step(Info, K, Rule, K1)` have one clause per rule of the forward and backward figures: AssVar, AssArr, Call, Return1, UnCall, Return2, Skip, IfTrue1, IfTrue2, IfFalse1, IfFalse2, LoopMain, LoopBase, Loop1, Loop2.
 - The initial configuration is ⟨ε, entry(s), ℓ, []⟩ with entry(s) → ℓ in the CFG of the main program. A forward computation ends successfully when the next block is the final `stop` of the main program, with an empty stack (Lemma "forward-rev").
 - `fwd_run/4` returns `final(K)` or `stuck(K)`; `bwd_run/4` returns `initial(K)` or `stuck(K)`.
 
-## Explorer (`--explore`)
+### Explorer (`--explore`)
 
 ```
 swipl -q -g main -t halt src/janus.pl -- --explore examples/sum3.jan
@@ -158,22 +227,7 @@ The screen shows the step number (forward steps from the initial configuration),
 
 Going back does not replay a history: the backward rules are applied to the current configuration, so the explorer also shows the loop lemma at work. A backward step is possible after the program has terminated, and also after a computation got stuck. On a terminal, keys are read with `get_single_char/1` (no Enter needed) and the screen is redrawn; with piped input (e.g. `printf 'ff\e[C\e[Dq' | swipl ...`) codes are read one by one and every screen is printed in sequence.
 
-## Building the Lean 4 specification (`lean4/`)
-
-The Lean development is a Lake project that depends on Mathlib. All versions are pinned: `lean-toolchain` fixes Lean 4.28.0, and `lake-manifest.json` fixes the exact commit of Mathlib and of each of its dependencies.
-
-1. Install [elan](https://github.com/leanprover/elan), the Lean version manager. It installs the Lean version given in `lean-toolchain` automatically.
-2. Download the prebuilt Mathlib and build the project:
-
-```
-cd lean4
-lake exe cache get
-lake build
-```
-
-`lake exe cache get` downloads the precompiled Mathlib files (about 7 GB on disk, in `lean4/.lake/`); without it, `lake build` compiles Mathlib from source, which takes hours. The development contains no `sorry` and no `axiom`.
-
-## Abstract syntax: mapping to Lean (`Syntax.lean`, `Semantics.lean`, `Inverter.lean`)
+### Abstract syntax: mapping to Lean (`Syntax.lean`, `Semantics.lean`, `Inverter.lean`)
 
 | Paper | Lean | Prolog |
 |---|---|---|
@@ -202,7 +256,7 @@ lake build
 
 In Lean the three update operators appear inside `BinOp` as `BinOp.mod op`. In Prolog they are flattened into the 16 operator atoms of `binop/1`. Note also that the inverse of a sequence is `seq(IS2, IS1)`, so inverting a right-nested sequence gives a left-nested one. Both are valid terms: `seq` is binary, as in Lean.
 
-## Concrete syntax conventions
+### Concrete syntax conventions
 
 - **Programs.** A program is a statement sequence (the main body) followed by zero or more sections `procedure id S`. Each body extends to the next `procedure` or to the end of file.
 - **Sequences.**
@@ -219,7 +273,7 @@ In Lean the three update operators appear inside `BinOp` as `BinOp.mod op`. In P
 - **Syntax errors** are thrown as `janus_syntax_error(Line, Message)`. The command line prints `FILE: syntax error at line L: ...`.
 - **Pretty-printer.** `pp_program/1` prints one statement per line with minimal parentheses. Its output parses back to the same term; this is tested on all examples.
 
-## Arithmetic (default behaviour of the Jana interpreter)
+### Arithmetic (default behaviour of the Jana interpreter)
 
 | Aspect | Prolog behaviour |
 |---|---|
@@ -233,12 +287,12 @@ In Lean the three update operators appear inside `BinOp` as `BinOp.mod op`. In P
 
 Reference values (all tested): (−7)/2 = −4, (−7)%2 = 1; 7/(−2) = −4, 7%(−2) = −1; (−7)/(−2) = 3, (−7)%(−2) = −1; 7/2 = 3, 7%2 = 1; (−1)&5 = 5, (−8)|3 = −5, (−1)^5 = −6.
 
-## Stores
+### Stores
 
 - **Totality.** A store is a total function with default 0. Only nonzero bindings are kept, in a `library(assoc)` AVL tree with keys `var(X)` and `cell(X, I)`. A scalar `x` and the cells `x[i]` therefore never alias.
 - **Canonical form.** Every update rebuilds the tree with `list_to_assoc/2` from the sorted binding list, and setting a location to 0 deletes its key. Hence equal stores are equal terms, which the tests compare with `==`.
 
-## Semantics
+### Semantics
 
 `janus_bigstep.pl` transcribes the rules literally, one clause per rule.
 - `IfTrue`/`IfFalse` evaluate the assertion e₂ in the store **after** s₁ (resp. s₂).
@@ -249,7 +303,7 @@ Reference values (all tested): (−7)/2 = −4, (−7)%2 = 1; 7/(−2) = −4, 7
 
 Cuts are used only in the tokenizer and parser, for deterministic dispatch on the next token, and in printing and key-reading helpers (pretty-printers, `janus_explore.pl`), which have no declarative reading. The big-step, small-step and reversible rules, the inverter, the labeling, `entry`/`exit`/`flow`, arithmetic and store use no cuts. If-then-else appears in `bool_value/2` (0/1 results), in the store helpers and in the drivers that apply rules until none applies (`ss_run/4`, `fwd_run/4`, `bwd_run/4`, `explore_command/5`); these commit to the first applicable rule, which is the only one since the relations are deterministic (checked by the tests).
 
-## Tests: comparison with the Lean suite
+### Tests: comparison with the Lean suite
 
 Run with `swipl -g run_tests -t halt tests/test_janus.pl`. There are 132 tests in six units: parser, arith, store, interpreter, inverter, trace.
 
@@ -283,7 +337,7 @@ Run with `swipl -g run_tests -t halt tests/test_janus.pl`. There are 132 tests i
 | trace mode | — | `trace:*` | same final store as `run_program/2`; the loop derivation is LoopMain, 3 × LoopRec, LoopBase; failing premise identified |
 | inversion of well-formed programs | `BigStep.assVar_invert`, `BigStep.assArr_invert`, `inverse_loop_concrete` | `inverter:semantic_inversion`, `semantic_inversion_nonempty_start` | back to the initial store |
 
-## Tests of the small-step and reversible semantics
+### Tests of the small-step and reversible semantics
 
 Run with `swipl -g run_tests -t halt tests/test_reversible.pl` (about 5 s). There are 181 tests in six units.
 
@@ -297,3 +351,7 @@ Run with `swipl -g run_tests -t halt tests/test_reversible.pl` (about 5 s). Ther
 | `random` | 400 random programs (fixed seed; variables, an array, nested conditionals and terminating loops, calls and uncalls of non-recursive procedures, divisions): for each, the three semantics agree (about 3/4 of the programs have a derivation, the rest get stuck in all three), the rules are deterministic, the loop lemma holds at every step, the backward rules go back to the initial configuration through the same configurations, labels are unique, flow(𝓘⟦s⟧) = swap(flow(s)), and `call m uncall m` gives back the empty store; all 15 forward rules are exercised |
 
 All runs in the tests have a time limit, so a wrong rule makes a test fail instead of looping.
+
+## License
+
+MIT (see `LICENSE`).

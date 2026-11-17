@@ -8,9 +8,10 @@ public import RevJanus.Janus.SmallStep
 
 This file proves Lemma "forward-rev" of Subsection "The Forward Rules":
 
-> Let `s` be a statement where `entry(s) ⟶ ℓ` belongs to the CFG. Then
-> `⟨ε, s, []⟩ →* ⟨σ, skip, []⟩` iff there exist `ℓ'`, `ℓ''` such that
-> `⟨ε, entry(s), ℓ, []⟩ ⇀* ⟨σ, ℓ', ℓ'', []⟩` with `block(ℓ'') = stop`.
+> Let `p` be a program with main statement `s`, and let `[start]^a t [stop]^z` be the main
+> program of its labeled version, with `a ⟶ ℓ` in its CFG. Then, for all stores `σ₀` and `σ`,
+> `⟨σ₀, s, []⟩ →* ⟨σ, skip, []⟩` iff there exist `ℓ'`, `ℓ''` such that
+> `⟨σ₀, a, ℓ, []⟩ ⇀* ⟨σ, ℓ', ℓ'', []⟩` with `block(ℓ'') = stop`.
 
 As in the paper, the small-step semantics runs on the original program (without `start`
 and `stop`, ignoring labels), while the forward rules run on its labeled version. The lemma
@@ -699,8 +700,9 @@ theorem back_final (hW : FwdWF P Γ main) {c : SSConfig} {σ : Store} {ℓ' ℓ'
 
 /-! ### Lemma "forward-rev" -/
 
-theorem corr_init (hW : FwdWF P Γ main) {ℓ : Label} (hℓ : (P.main.entry, ℓ) ∈ P.mainCFG) :
-    Corr P ⟨Store.empty, main, []⟩ ⟨Store.empty, P.main.entry, ℓ, []⟩ := by
+theorem corr_init (hW : FwdWF P Γ main) {ℓ : Label} (hℓ : (P.main.entry, ℓ) ∈ P.mainCFG)
+    (σ₀ : Store) :
+    Corr P ⟨σ₀, main, []⟩ ⟨σ₀, P.main.entry, ℓ, []⟩ := by
   have hP := hW.unique
   obtain ⟨a, m, z, hs, hr⟩ := hW.main_shape
   have hb := P.main_mem_bodies
@@ -711,20 +713,20 @@ theorem corr_init (hW : FwdWF P Γ main) {ℓ : Label} (hℓ : (P.main.entry, �
 
 /-- Lemma "forward-rev", for any labeled program `P` related to the original program
 `(main, Γ)` by `FwdWF`: if `entry(s) ⟶ ℓ` belongs to the CFG of the main program `s` of
-`P`, then `⟨ε, main, []⟩ →* ⟨σ, skip, []⟩` iff `⟨ε, entry(s), ℓ, []⟩ ⇀* ⟨σ, ℓ', ℓ'', []⟩`
-with `block(ℓ'') = stop`, for some `ℓ'`, `ℓ''`. -/
+`P`, then, for all stores `σ₀` and `σ`, `⟨σ₀, main, []⟩ →* ⟨σ, skip, []⟩` iff
+`⟨σ₀, entry(s), ℓ, []⟩ ⇀* ⟨σ, ℓ', ℓ'', []⟩` with `block(ℓ'') = stop`, for some `ℓ'`, `ℓ''`. -/
 theorem smallSteps_iff_fwdSteps (hW : FwdWF P Γ main) {ℓ : Label}
-    (hℓ : (P.main.entry, ℓ) ∈ P.mainCFG) (σ : Store) :
-    SmallSteps Γ ⟨Store.empty, main, []⟩ ⟨σ, .skip, []⟩ ↔
-      ∃ ℓ' ℓ'', FwdSteps P ⟨Store.empty, P.main.entry, ℓ, []⟩ ⟨σ, ℓ', ℓ'', []⟩ ∧
+    (hℓ : (P.main.entry, ℓ) ∈ P.mainCFG) (σ₀ σ : Store) :
+    SmallSteps Γ ⟨σ₀, main, []⟩ ⟨σ, .skip, []⟩ ↔
+      ∃ ℓ' ℓ'', FwdSteps P ⟨σ₀, P.main.entry, ℓ, []⟩ ⟨σ, ℓ', ℓ'', []⟩ ∧
         P.block ℓ'' = some .stop := by
   constructor
   · intro h
-    obtain ⟨k, hk, hc⟩ := fwd_sims hW (corr_init hW hℓ) h
+    obtain ⟨k, hk, hc⟩ := fwd_sims hW (corr_init hW hℓ σ₀) h
     obtain ⟨⟨σ', ℓ', ℓ'', S'⟩, hk', rfl, rfl, hb⟩ := fwd_final hW hc
     exact ⟨ℓ', ℓ'', hk.trans hk', hb⟩
   · rintro ⟨ℓ', ℓ'', hk, hb⟩
-    obtain ⟨c, hc, hcorr⟩ := back_sims hW (corr_init hW hℓ) hk
+    obtain ⟨c, hc, hcorr⟩ := back_sims hW (corr_init hW hℓ σ₀) hk
     rw [← back_final hW hcorr hb]
     exact hc
 

@@ -426,11 +426,11 @@ theorem corr_iff_confEquiv (hW : FwdWF P Γ main) {c : SSConfig} {k : RConfig} :
 /-! ### The proof of Lemma "forward-rev" with `∼conf` -/
 
 /-- First paragraph of the proof: the initial configurations are related,
-`⟨ε, s, []⟩ ∼conf ⟨ε, a, ℓ, []⟩`. -/
+`⟨σ₀, s, []⟩ ∼conf ⟨σ₀, a, ℓ, []⟩`, for every store `σ₀`. -/
 theorem ConfEquiv.init (hW : FwdWF P Γ main) {ℓ : Label}
-    (hℓ : (P.main.entry, ℓ) ∈ P.mainCFG) :
-    ConfEquiv P ⟨Store.empty, main, []⟩ ⟨Store.empty, P.main.entry, ℓ, []⟩ :=
-  (corr_iff_confEquiv hW).1 (corr_init hW hℓ)
+    (hℓ : (P.main.entry, ℓ) ∈ P.mainCFG) (σ₀ : Store) :
+    ConfEquiv P ⟨σ₀, main, []⟩ ⟨σ₀, P.main.entry, ℓ, []⟩ :=
+  (corr_iff_confEquiv hW).1 (corr_init hW hℓ σ₀)
 
 /-- The (⇒) direction: if `c₁ ∼conf k₁` and `c₁ → c₂`, then `k₁ ⇀* k₂` and `c₂ ∼conf k₂`
 for some `k₂`. -/
@@ -485,17 +485,17 @@ theorem ConfEquiv.back_sims (hW : FwdWF P Γ main) {c₁ : SSConfig} {k₁ k₂ 
 /-- Lemma "forward-rev", proved with the paper's relation `∼conf` (same statement as
 `smallSteps_iff_fwdSteps`). -/
 theorem ConfEquiv.smallSteps_iff_fwdSteps (hW : FwdWF P Γ main) {ℓ : Label}
-    (hℓ : (P.main.entry, ℓ) ∈ P.mainCFG) (σ : Store) :
-    SmallSteps Γ ⟨Store.empty, main, []⟩ ⟨σ, .skip, []⟩ ↔
-      ∃ ℓ' ℓ'', FwdSteps P ⟨Store.empty, P.main.entry, ℓ, []⟩ ⟨σ, ℓ', ℓ'', []⟩ ∧
+    (hℓ : (P.main.entry, ℓ) ∈ P.mainCFG) (σ₀ σ : Store) :
+    SmallSteps Γ ⟨σ₀, main, []⟩ ⟨σ, .skip, []⟩ ↔
+      ∃ ℓ' ℓ'', FwdSteps P ⟨σ₀, P.main.entry, ℓ, []⟩ ⟨σ, ℓ', ℓ'', []⟩ ∧
         P.block ℓ'' = some .stop := by
   constructor
   · intro h
-    obtain ⟨k, hk, hc⟩ := (ConfEquiv.init hW hℓ).fwd_sims hW h
+    obtain ⟨k, hk, hc⟩ := (ConfEquiv.init hW hℓ σ₀).fwd_sims hW h
     obtain ⟨⟨σ', ℓ', ℓ'', S'⟩, hk', rfl, rfl, hb⟩ := hc.final_fwd hW
     exact ⟨ℓ', ℓ'', hk.trans hk', hb⟩
   · rintro ⟨ℓ', ℓ'', hk, hb⟩
-    obtain ⟨c, hc, hconf⟩ := (ConfEquiv.init hW hℓ).back_sims hW hk
+    obtain ⟨c, hc, hconf⟩ := (ConfEquiv.init hW hℓ σ₀).back_sims hW hk
     rw [← hconf.final_back hW hb]
     exact hc
 

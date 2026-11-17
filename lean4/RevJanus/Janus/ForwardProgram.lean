@@ -11,7 +11,8 @@ bodies delimited by `start`/`stop`, inverse procedures added, labels added) sati
 conditions `FwdWF` with respect to `p`, and deduce Lemma "forward-rev" for every program
 (`Program.smallSteps_iff_fwdSteps`). Combined with the equivalence between the big-step and
 the small-step semantics, this also relates the forward rules with the big-step semantics
-(`Program.exec_iff_fwdSteps`).
+(`Program.exec_iff_fwdSteps`, and `Program.bigStep_iff_fwdSteps` for an arbitrary
+initial store).
 -/
 
 @[expose] public section
@@ -134,20 +135,21 @@ theorem Program.fwdWF (p : Program) : FwdWF p.toLabeled p.procEnv p.main where
 /-! ### Lemma "forward-rev" -/
 
 /-- **Lemma "forward-rev".** Let `p = (s p₁ … pₙ)` be a program, and `ℓ` a label such that
-`entry(s) ⟶ ℓ` belongs to the CFG of the main program of its labeled version. Then
-`⟨ε, s, []⟩ →* ⟨σ, skip, []⟩` (small-step semantics of `p`) iff there exist `ℓ'`, `ℓ''` such
-that `⟨ε, entry(s), ℓ, []⟩ ⇀* ⟨σ, ℓ', ℓ'', []⟩` (forward rules on the labeled version of `p`)
-with `block(ℓ'') = stop`. -/
+`a ⟶ ℓ` belongs to the CFG of the main program of its labeled version, where `a` is the label
+of its initial `start`. Then, for all stores `σ₀` and `σ`, `⟨σ₀, s, []⟩ →* ⟨σ, skip, []⟩`
+(small-step semantics of `p`) iff there exist `ℓ'`, `ℓ''` such that
+`⟨σ₀, a, ℓ, []⟩ ⇀* ⟨σ, ℓ', ℓ'', []⟩` (forward rules on the labeled version of `p`) with
+`block(ℓ'') = stop`. -/
 theorem Program.smallSteps_iff_fwdSteps (p : Program) {ℓ : Label}
-    (hℓ : (p.toLabeled.main.entry, ℓ) ∈ p.toLabeled.mainCFG) (σ : Store) :
-    SmallSteps p.procEnv ⟨Store.empty, p.main, []⟩ ⟨σ, .skip, []⟩ ↔
-      ∃ ℓ' ℓ'', FwdSteps p.toLabeled ⟨Store.empty, p.toLabeled.main.entry, ℓ, []⟩
+    (hℓ : (p.toLabeled.main.entry, ℓ) ∈ p.toLabeled.mainCFG) (σ₀ σ : Store) :
+    SmallSteps p.procEnv ⟨σ₀, p.main, []⟩ ⟨σ, .skip, []⟩ ↔
+      ∃ ℓ' ℓ'', FwdSteps p.toLabeled ⟨σ₀, p.toLabeled.main.entry, ℓ, []⟩
           ⟨σ, ℓ', ℓ'', []⟩ ∧ p.toLabeled.block ℓ'' = some .stop :=
-  Janus.smallSteps_iff_fwdSteps p.fwdWF hℓ σ
+  Janus.smallSteps_iff_fwdSteps p.fwdWF hℓ σ₀ σ
 
-/-- Lemma "forward-rev" stated with initial configurations: for every initial configuration
-`k` of the labeled version of `p`, `⟨ε, s, []⟩ →* ⟨σ, skip, []⟩` iff `k ⇀* ⟨σ, ℓ', ℓ'', []⟩`
-with `block(ℓ'') = stop`. -/
+/-- Lemma "forward-rev" stated with initial configurations (the case `σ₀ = ε`): for every
+initial configuration `k` of the labeled version of `p`, `⟨ε, s, []⟩ →* ⟨σ, skip, []⟩` iff
+`k ⇀* ⟨σ, ℓ', ℓ'', []⟩` with `block(ℓ'') = stop`. -/
 theorem Program.smallSteps_iff_fwdSteps_of_isInitial (p : Program) {k : RConfig}
     (hk : p.toLabeled.IsInitial k) (σ : Store) :
     SmallSteps p.procEnv ⟨Store.empty, p.main, []⟩ ⟨σ, .skip, []⟩ ↔
@@ -156,7 +158,7 @@ theorem Program.smallSteps_iff_fwdSteps_of_isInitial (p : Program) {k : RConfig}
   obtain ⟨σ₀, ℓ₀, ℓ, S⟩ := k
   obtain ⟨h1, h2, h3, h4⟩ := hk
   simp only at h1 h2 h3 h4; subst h1 h2 h4
-  exact p.smallSteps_iff_fwdSteps h3 σ
+  exact p.smallSteps_iff_fwdSteps h3 Store.empty σ
 
 /-- Combined with the equivalence between the big-step and the small-step semantics: a
 program terminates in store `σ` (big-step semantics) iff the forward rules reach, from an
@@ -167,7 +169,17 @@ theorem Program.exec_iff_fwdSteps (p : Program) {ℓ : Label}
       ∃ ℓ' ℓ'', FwdSteps p.toLabeled ⟨Store.empty, p.toLabeled.main.entry, ℓ, []⟩
           ⟨σ, ℓ', ℓ'', []⟩ ∧ p.toLabeled.block ℓ'' = some .stop := by
   rw [Program.exec_iff_smallSteps]
-  exact p.smallSteps_iff_fwdSteps hℓ σ
+  exact p.smallSteps_iff_fwdSteps hℓ Store.empty σ
+
+/-- The same, for an arbitrary initial store `σ₀`: `⟨σ₀, s⟩ ⇓ σ` (big-step semantics of `p`)
+iff the forward rules reach, from `⟨σ₀, a, ℓ, []⟩`, a configuration `⟨σ, ℓ', ℓ'', []⟩` with
+`block(ℓ'') = stop` (Lemma "forward-rev" combined with Theorem "equiv"). -/
+theorem Program.bigStep_iff_fwdSteps (p : Program) {ℓ : Label}
+    (hℓ : (p.toLabeled.main.entry, ℓ) ∈ p.toLabeled.mainCFG) (σ₀ σ : Store) :
+    Janus.Exec p.procEnv σ₀ p.main σ ↔
+      ∃ ℓ' ℓ'', FwdSteps p.toLabeled ⟨σ₀, p.toLabeled.main.entry, ℓ, []⟩
+          ⟨σ, ℓ', ℓ'', []⟩ ∧ p.toLabeled.block ℓ'' = some .stop :=
+  Iff.trans Janus.bigStep_iff_smallSteps (p.smallSteps_iff_fwdSteps hℓ σ₀ σ)
 
 end Janus
 
